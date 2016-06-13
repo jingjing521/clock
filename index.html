@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>canvas clock</title>
+</head>
+<style>
+#canvas{
+  display: block;
+  position: absolute;
+  margin: auto;
+  left:0;
+  right: 0;
+  top:0;
+  bottom:0;
+}
+
+</style>
+<body>
+  <!-- 画布大小只能通过属性设置 不能通过css样式去设置 -->
+  <canvas id="canvas" width="400" height="400"></canvas>
+</body>
+<script>
+window.onload = function(){
+  var canvas = document.querySelector('#canvas');
+  var ctx = canvas.getContext('2d');
+  var r = function(deg){
+    return (Math.PI/180)*deg;
+  };
+var drawClock =function(){
+ var img = new Image();
+ img.src='img/5.png'
+ img.onload=function(){
+   ctx.clearRect(0,0,400,400);
+   var ptrn = ctx.createPattern(img,'no-repeat');
+   ctx.fillStyle = ptrn;
+   ctx.fillRect(0,0,400,400);
+
+        var now = new Date();
+         // 时钟
+         var h = now.getHours();
+         var m = now.getMinutes();
+         var s = now.getSeconds();
+         ctx.save();
+         ctx.translate(170,165);
+
+         var clockRadius=100;
+         ctx.font = '24px Arial';
+         ctx.fillStyle = '#000';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         for (var n = 1; n <= 12; n++) {
+             var theta = (n - 3) * (Math.PI * 2) / 12;
+             var x = 5+clockRadius * 0.7 * Math.cos(theta);
+             var y = 5+ clockRadius * 0.7 * Math.sin(theta);
+             ctx.fillText(n, x, y);
+         }
+
+         ctx.save();
+         ctx.beginPath();
+        for(var i=0;i<60;i++){
+           ctx.moveTo(0,-90);
+          if(i%5 === 0){
+               ctx.moveTo(0,-80);
+          }
+          ctx.lineTo(0,-100);
+          ctx.rotate(r(6));
+        }
+        ctx.stroke();
+        ctx.fillStyle = 'red';
+        ctx.closePath();
+        ctx.restore();
+         ctx.save();
+         var deg = 360 * ( (h*3600 + m * 60 +s)/43200);
+         ctx.rotate(r(deg));
+         ctx.beginPath();
+         ctx.moveTo(0,5);
+         ctx.lineTo(0,15);
+         ctx.moveTo(5,0);
+         ctx.arc(0,0,5,0,r(360));
+         ctx.moveTo(0,-5);
+         ctx.lineTo(0,-50);
+         ctx.lineWidth = 10;
+         ctx.strokeStyle = 'rgba(212, 210, 207)';
+         ctx.fill();
+         ctx.stroke();
+
+         ctx.closePath();
+         ctx.restore();
+         // 分钟
+         var m = now.getMinutes();
+         var s = now.getSeconds();
+         var deg = 360 * ( (m * 60 +s)/3600);
+         ctx.save();
+         ctx.rotate(r(deg));
+         ctx.beginPath();
+         ctx.moveTo(0,5);
+         ctx.lineTo(0,15);
+         ctx.moveTo(5,0);
+         ctx.arc(0,0,5,0,r(360));
+         ctx.moveTo(0,-5);
+         ctx.lineTo(0,-60);
+         ctx.lineWidth = 10;
+         ctx.stroke();
+         ctx.closePath();
+         ctx.restore();
+
+         // 秒针
+         var s = now.getSeconds()*1000 + now.getMilliseconds();
+         var deg = 360 * ( s/60000 );
+         ctx.save();
+         ctx.rotate(r(deg));
+         ctx.beginPath();
+         ctx.moveTo(0,5);
+         ctx.lineTo(0,15);
+         ctx.moveTo(5,0);
+         ctx.arc(0,0,5,0,r(360));
+
+         ctx.moveTo(0,-5);
+         ctx.lineTo(0,-70);
+         ctx.lineWidth = 5;
+         ctx.strokeStyle = 'red';
+
+
+         ctx.stroke();
+         ctx.closePath();
+         ctx.restore();
+         ctx.restore();
+
+
+   }
+}
+drawClock();
+
+setInterval(drawClock,1000);
+
+}
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
